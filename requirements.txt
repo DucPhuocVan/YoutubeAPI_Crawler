@@ -1,0 +1,4 @@
+googleapiclient.discovery
+googleapiclient.errors
+dotenv
+psycopg2
