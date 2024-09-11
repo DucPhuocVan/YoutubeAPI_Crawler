@@ -13,7 +13,7 @@ load_dotenv()
 
 @dag(
     start_date=datetime(2024, 1, 1),
-    schedule="@daily",
+    # schedule="@daily",
     catchup=False,
     doc_md=__doc__,
     default_args={"owner": "Astro", "retries": 3},
