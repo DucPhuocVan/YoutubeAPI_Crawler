@@ -13,15 +13,12 @@ class Transform:
     def filter_video_titles(self, df):
         if 'video_title' in df.columns:
             mask = df['video_title'].isin(['Deleted video', 'Private video'])
-            print(mask)
             df_filtered = df[~mask]
-            print(df_filtered)
         else:
             df_filtered = df
         return df_filtered
     
     def convert_to_datetime(self, df, column_name):
         df = self.filter_video_titles(df)
-        print(df)
         df[column_name] = pd.to_datetime(df[column_name])
         return df
