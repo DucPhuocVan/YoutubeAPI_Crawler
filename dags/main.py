@@ -29,6 +29,7 @@ def youtube_api():
     def channel_overview():
         youtube.build_service()
         channel_overview_df = youtube.get_channel_overview(os.environ.get('channel_id'))
+        channel_overview_df = transform.drop_duplicate(channel_overview_df)
         load.save_and_load(channel_overview_df, 'channel_overview', ['channel_id'])
         return channel_overview_df
 
@@ -36,6 +37,7 @@ def youtube_api():
     def all_videos(channel_overview_df):
         youtube.build_service()
         all_videos_df = youtube.get_all_videos(channel_overview_df.iloc[0]['playlist_id'])
+        all_videos_df = transform.drop_duplicate(all_videos_df)
         all_videos_df = transform.convert_to_datetime(all_videos_df, 'video_published_at')
         load.save_and_load(all_videos_df, 'all_videos', ['video_id'])
         return all_videos_df
@@ -45,6 +47,7 @@ def youtube_api():
         youtube.build_service()
         video_list = all_videos_df['video_id'].tolist()
         video_details_df = youtube.get_video_details(video_list)
+        video_details_df = transform.drop_duplicate(video_details_df)
         video_details_df = transform.convert_to_datetime(video_details_df, 'published_at')
         video_details_df = transform.convert_to_seconds(video_details_df, 'video_duration')
         load.save_and_load(video_details_df, 'video_details', ['video_id'])
@@ -54,6 +57,8 @@ def youtube_api():
         youtube.build_service()
         video_list = all_videos_df['video_id'].tolist()
         comments_df, replies_df = youtube.get_video_comments(video_list)
+        comments_df = transform.drop_duplicate(comments_df)
+        replies_df = transform.drop_duplicate(replies_df)
         comments_df = transform.convert_to_datetime(comments_df, 'comment_published_at')
         comments_df = transform.convert_to_datetime(comments_df, 'comment_updated_at')
         replies_df = transform.convert_to_datetime(replies_df, 'reply_published_at')
@@ -65,6 +70,7 @@ def youtube_api():
     def playlists():
         youtube.build_service()
         playlist_df = youtube.get_playlists(os.environ.get('channel_id'))
+        playlist_df = transform.drop_duplicate(playlist_df)
         playlist_df = transform.convert_to_datetime(playlist_df, 'published_at')
         load.save_and_load(playlist_df, 'playlist', ['playlist_id'])
         return playlist_df
