@@ -114,7 +114,9 @@ class Youtube:
                 while True:
                     request = self.youtube.commentThreads().list(
                         part="snippet,replies",
-                        videoId=video_id
+                        videoId=video_id,
+                        maxResults = 100,
+                        pageToken=next_page_token
                     )
                     response = request.execute()
 

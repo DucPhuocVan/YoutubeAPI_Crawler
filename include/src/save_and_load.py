@@ -14,8 +14,8 @@ class SaveAndLoad:
         df.to_csv(filename, index=False)
         print(f"DataFrame saved to {filename}")
 
-    def save_and_load(self, df, filename):
+    def save_and_load(self, df, filename, unique_key: list):
         path = os.environ.get('data_path')+filename+'.csv'
         self.save_to_csv(df, path)
         self.s3.upload_to_s3(path, 'youtubeapi', filename+'.csv')
-        self.postgres.load_to_postgres({filename: df})
+        self.postgres.load_to_postgres({filename: df}, unique_key)
