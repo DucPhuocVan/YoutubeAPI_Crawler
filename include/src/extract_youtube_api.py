@@ -2,9 +2,10 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import json
 import pandas as pd
-import pdb
 import os
 from dotenv import load_dotenv
+from .checkpoint import CheckPoint
+from datetime import datetime, timezone
 
 load_dotenv()
 
@@ -13,6 +14,7 @@ class Youtube:
         self.api_service_name = "youtube"
         self.api_version = "v3"
         self.youtube = None
+        self.checkpoint = CheckPoint()
 
     def build_service(self):
         self.youtube = build(
@@ -24,10 +26,10 @@ class Youtube:
     def get_channel_overview(self, channel_id):
         if not self.youtube:
             raise ValueError("YouTube service is not built")
-        data = []
+        channel_overview = []
         request = self.youtube.channels().list(
-        part="snippet,contentDetails,statistics",
-        id=channel_id
+            part="snippet,contentDetails,statistics",
+            id=channel_id
         )
         response = request.execute()
 
@@ -43,9 +45,11 @@ class Youtube:
                 'video_count': item['statistics']['videoCount'],
                 'playlist_id': item['contentDetails']['relatedPlaylists']['uploads']
             }
-            data.append(row)
+            channel_overview.append(row)
 
-        return pd.DataFrame(data)
+        df = pd.DataFrame(channel_overview)
+
+        return df
     
     def get_all_videos(self, playlist_id):
         if not self.youtube:
@@ -71,7 +75,8 @@ class Youtube:
 
             request = self.youtube.playlistItems().list_next(request, response)
 
-        return pd.DataFrame(videos)
+        df = pd.DataFrame(videos)
+        return df
     
     def get_video_details(self, video_list):
         if not self.youtube:
@@ -99,13 +104,21 @@ class Youtube:
                 }
                 video.append(row)
 
-        return pd.DataFrame(video)
+        df = pd.DataFrame(video)
+        return df
     
     def get_video_comments(self, video_list):
         if not self.youtube:
             raise ValueError("YouTube service is not built")
         all_comments = []
         all_replies = []
+
+        # create table if not exists
+        self.checkpoint.create_checkpoint_table()
+
+        # get checkpoint
+        checkpoint_comment = self.checkpoint.get_last_checkpoint("video_comments")
+        checkpoint_reply = self.checkpoint.get_last_checkpoint("video_replies")
 
         for video_id in video_list:
             try:
@@ -120,7 +133,15 @@ class Youtube:
                     )
                     response = request.execute()
 
+                    # load comment
                     for item in response['items']:
+                        comment_updated_at = item['snippet']['topLevelComment']['snippet']['updatedAt']
+                        comment_updated_at_dt = datetime.strptime(comment_updated_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+
+                        # skip comment <= checkpoint
+                        if checkpoint_comment and comment_updated_at_dt <= checkpoint_comment:
+                            continue
+
                         row = {
                             'comment_id': item['id'],
                             'channel_id': item['snippet']['channelId'],
@@ -135,8 +156,17 @@ class Youtube:
                             'comment_reply_count': item['snippet']['totalReplyCount']
                         }
                         all_comments.append(row)
+
+                        # load reply
                         if 'replies' in item:
                             for reply in item['replies']['comments']:
+                                reply_updated_at = reply['snippet']['updatedAt']
+                                reply_updated_at_dt = datetime.strptime(reply_updated_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+
+                                # skip reply <= checkpoint
+                                if checkpoint_reply and reply_updated_at_dt <= checkpoint_reply:
+                                    continue
+
                                 row_reply = {
                                     'reply_comment_id': reply['id'],
                                     'comment_id_parrent': reply['snippet']['parentId'],
@@ -159,7 +189,22 @@ class Youtube:
                     
         comments_df = pd.DataFrame(all_comments)
         replies_df = pd.DataFrame(all_replies)
+
+        # Update checkpoint date to the latest `updated_at`
+        if not comments_df.empty:
+            latest_comment_date = pd.to_datetime(comments_df['comment_updated_at']).max()
+        else:
+            latest_comment_date = checkpoint_comment
         
+        if not replies_df.empty:
+            latest_reply_date = pd.to_datetime(replies_df['reply_updated_at']).max()
+        else:
+            latest_reply_date = checkpoint_reply
+        
+        # update checkpoint
+        self.checkpoint.update_checkpoint("video_comments", latest_comment_date)
+        self.checkpoint.update_checkpoint("video_replies", latest_reply_date)
+
         return comments_df, replies_df
     
     def get_playlists(self, channel_id):
@@ -181,4 +226,6 @@ class Youtube:
                 'playlist_title': item['snippet']['title']
             }
             playlists.append(row)
-        return pd.DataFrame(playlists)
+
+        df = pd.DataFrame(playlists)
+        return df

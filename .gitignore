@@ -17,3 +17,4 @@ include/minio
 include/data
 .astro
 .ipynb_checkpoints
+test.py

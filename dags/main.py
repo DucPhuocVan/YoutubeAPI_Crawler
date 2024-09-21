@@ -2,9 +2,9 @@ from airflow import Dataset
 from airflow.decorators import dag, task
 from pendulum import datetime
 import requests
-from include.src.extract_data_youtube_api import Youtube
+from include.src.extract_youtube_api import Youtube
 from include.src.transform_data import Transform
-from include.src.save_and_load import SaveAndLoad
+from include.src.load_and_extract_s3 import S3
 import os
 import pandas as pd
 from dotenv import load_dotenv
@@ -21,8 +21,8 @@ load_dotenv()
 )
 def youtube_api():
     youtube = Youtube()
-    load = SaveAndLoad()
     transform = Transform()
+    load_extract_s3 = S3()
 
     # Define tasks
     @task
@@ -30,16 +30,21 @@ def youtube_api():
         youtube.build_service()
         channel_overview_df = youtube.get_channel_overview(os.environ.get('channel_id'))
         channel_overview_df = transform.drop_duplicate(channel_overview_df)
-        load.save_and_load(channel_overview_df, 'channel_overview', ['channel_id'])
+        load_extract_s3.upload_to_s3(channel_overview_df, 'channel_overview')
+        load_extract_s3.load_file_into_posgres('channel_overview', ['channel_id'], 'overwrite_daily')
+
         return channel_overview_df
 
     @task
     def all_videos(channel_overview_df):
         youtube.build_service()
+        print(channel_overview_df)
         all_videos_df = youtube.get_all_videos(channel_overview_df.iloc[0]['playlist_id'])
         all_videos_df = transform.drop_duplicate(all_videos_df)
         all_videos_df = transform.convert_to_datetime(all_videos_df, 'video_published_at')
-        load.save_and_load(all_videos_df, 'all_videos', ['video_id'])
+        load_extract_s3.upload_to_s3(all_videos_df, 'all_videos')
+        load_extract_s3.load_file_into_posgres('all_videos', ['video_id'], 'overwrite')
+
         return all_videos_df
 
     @task
@@ -50,7 +55,8 @@ def youtube_api():
         video_details_df = transform.drop_duplicate(video_details_df)
         video_details_df = transform.convert_to_datetime(video_details_df, 'published_at')
         video_details_df = transform.convert_to_seconds(video_details_df, 'video_duration')
-        load.save_and_load(video_details_df, 'video_details', ['video_id'])
+        load_extract_s3.upload_to_s3(video_details_df, 'video_details')
+        load_extract_s3.load_file_into_posgres('video_details', ['video_id'], 'overwrite_daily')
 
     @task
     def video_comments(all_videos_df):
@@ -63,8 +69,10 @@ def youtube_api():
         comments_df = transform.convert_to_datetime(comments_df, 'comment_updated_at')
         replies_df = transform.convert_to_datetime(replies_df, 'reply_published_at')
         replies_df = transform.convert_to_datetime(replies_df, 'reply_updated_at')
-        load.save_and_load(comments_df, 'video_comments', ['comment_id'])
-        load.save_and_load(replies_df, 'video_replies', ['reply_comment_id'])
+        load_extract_s3.upload_to_s3(comments_df, 'video_comments')
+        load_extract_s3.upload_to_s3(replies_df, 'video_replies')
+        load_extract_s3.load_file_into_posgres('video_comments', ['comment_id'], 'append')
+        load_extract_s3.load_file_into_posgres('video_replies', ['reply_comment_id'], 'append')
 
     @task
     def playlists():
@@ -72,7 +80,9 @@ def youtube_api():
         playlist_df = youtube.get_playlists(os.environ.get('channel_id'))
         playlist_df = transform.drop_duplicate(playlist_df)
         playlist_df = transform.convert_to_datetime(playlist_df, 'published_at')
-        load.save_and_load(playlist_df, 'playlist', ['playlist_id'])
+        load_extract_s3.upload_to_s3(playlist_df, 'playlist')
+        load_extract_s3.load_file_into_posgres('playlist', ['playlist_id'], 'overwrite')
+
         return playlist_df
     
     @task
@@ -86,13 +96,15 @@ def youtube_api():
         video_playlists_df = pd.concat(video_playlists, ignore_index=True)
         video_playlists_df = transform.drop_duplicate(video_playlists_df)
         video_playlists_df = transform.convert_to_datetime(video_playlists_df, 'video_published_at')
-        load.save_and_load(video_playlists_df, 'video_playlists', ['video_id', 'playlist_id'])
+        load_extract_s3.upload_to_s3(video_playlists_df, 'video_playlists')
+        load_extract_s3.load_file_into_posgres('video_playlists', ['video_id'], 'overwrite')
 
     # Task Dependencies
     channel_overview_df = channel_overview()
     playlist_df = playlists()
     all_videos_df = all_videos(channel_overview_df)
-    [video_details(all_videos_df), video_comments(all_videos_df)]
+    video_details(all_videos_df)
     video_playlists(playlist_df)
+    video_comments(all_videos_df)
 
 youtube_api()
