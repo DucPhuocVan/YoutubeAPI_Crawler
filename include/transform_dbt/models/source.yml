@@ -1,0 +1,13 @@
+version: 2
+sources:
+  - name: stg
+    schema: public
+    database: postgres
+    tables:
+      - name: channel_overview
+      - name: all_videos
+      - name: playlist
+      - name: video_playlists
+      - name: video_details
+      - name: video_comments
+      - name: video_replies

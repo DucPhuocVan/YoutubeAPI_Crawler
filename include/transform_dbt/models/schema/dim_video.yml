@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: dim_video
+    columns:
+      - name: video_id
+        tests:
+          - unique
+          - not_null

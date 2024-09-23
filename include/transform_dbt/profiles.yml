@@ -1,0 +1,13 @@
+transform_dbt:
+  outputs:
+    dev:
+      dbname: postgres
+      host: host.docker.internal
+      # host: localhost
+      pass: postgres
+      port: 5432
+      schema: dw
+      threads: 1
+      type: postgres
+      user: postgres
+  target: dev
