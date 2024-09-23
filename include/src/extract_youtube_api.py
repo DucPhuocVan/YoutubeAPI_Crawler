@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from .checkpoint import CheckPoint
 from datetime import datetime, timezone
+import isodate
 
 load_dotenv()
 
@@ -97,7 +98,7 @@ class Youtube:
                     'video_title': item['snippet']['title'],
                     'video_description': item['snippet']['description'],
                     'category_id': item['snippet']['categoryId'],
-                    'video_duration': item['contentDetails']['duration'],
+                    'video_duration': int(isodate.parse_duration(item['contentDetails']['duration']).total_seconds()),
                     'video_view_count': item['statistics']['viewCount'],
                     'video_like_count': item['statistics']['likeCount'],
                     'video_comment_count': item['statistics']['commentCount']
@@ -110,6 +111,7 @@ class Youtube:
     def get_video_comments(self, video_list):
         if not self.youtube:
             raise ValueError("YouTube service is not built")
+        
         all_comments = []
         all_replies = []
 
@@ -120,6 +122,13 @@ class Youtube:
         checkpoint_comment = self.checkpoint.get_last_checkpoint("video_comments")
         checkpoint_reply = self.checkpoint.get_last_checkpoint("video_replies")
 
+        # Ensure checkpoints are timezone-aware (assuming they are stored without timezone)
+        if checkpoint_comment and checkpoint_comment.tzinfo is None:
+            checkpoint_comment = checkpoint_comment.replace(tzinfo=timezone.utc)
+        
+        if checkpoint_reply and checkpoint_reply.tzinfo is None:
+            checkpoint_reply = checkpoint_reply.replace(tzinfo=timezone.utc)
+
         for video_id in video_list:
             try:
                 next_page_token = None
@@ -128,17 +137,17 @@ class Youtube:
                     request = self.youtube.commentThreads().list(
                         part="snippet,replies",
                         videoId=video_id,
-                        maxResults = 100,
+                        maxResults=100,
                         pageToken=next_page_token
                     )
                     response = request.execute()
 
-                    # load comment
+                    # Load comment
                     for item in response['items']:
                         comment_updated_at = item['snippet']['topLevelComment']['snippet']['updatedAt']
                         comment_updated_at_dt = datetime.strptime(comment_updated_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
 
-                        # skip comment <= checkpoint
+                        # Skip comment <= checkpoint
                         if checkpoint_comment and comment_updated_at_dt <= checkpoint_comment:
                             continue
 
@@ -157,13 +166,13 @@ class Youtube:
                         }
                         all_comments.append(row)
 
-                        # load reply
+                        # Load replies
                         if 'replies' in item:
                             for reply in item['replies']['comments']:
                                 reply_updated_at = reply['snippet']['updatedAt']
                                 reply_updated_at_dt = datetime.strptime(reply_updated_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
 
-                                # skip reply <= checkpoint
+                                # Skip reply <= checkpoint
                                 if checkpoint_reply and reply_updated_at_dt <= checkpoint_reply:
                                     continue
 
@@ -183,25 +192,26 @@ class Youtube:
                     next_page_token = response.get('nextPageToken')
                     if not next_page_token:
                         break
-                    
+
             except HttpError as e:
                 print(f"An error occurred for video ID {video_id}: {e}")
-                    
+
+        # Convert to DataFrame
         comments_df = pd.DataFrame(all_comments)
         replies_df = pd.DataFrame(all_replies)
 
         # Update checkpoint date to the latest `updated_at`
         if not comments_df.empty:
-            latest_comment_date = pd.to_datetime(comments_df['comment_updated_at']).max()
+            latest_comment_date = pd.to_datetime(comments_df['comment_updated_at']).max().replace(tzinfo=timezone.utc)
         else:
             latest_comment_date = checkpoint_comment
-        
+
         if not replies_df.empty:
-            latest_reply_date = pd.to_datetime(replies_df['reply_updated_at']).max()
+            latest_reply_date = pd.to_datetime(replies_df['reply_updated_at']).max().replace(tzinfo=timezone.utc)
         else:
             latest_reply_date = checkpoint_reply
-        
-        # update checkpoint
+
+        # Update checkpoint in the database
         self.checkpoint.update_checkpoint("video_comments", latest_comment_date)
         self.checkpoint.update_checkpoint("video_replies", latest_reply_date)
 

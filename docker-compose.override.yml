@@ -14,11 +14,11 @@ services:
     volumes:
       - ${PWD}/include/minio:/data
     networks:
-      # - youtube-api_c817f8_airflow
-      - youtube-api_ee6a7e_airflow
+      - youtube-api_c817f8_airflow
+      # - youtube-api_ee6a7e_airflow
 
 networks:
-  # youtube-api_c817f8_airflow:
-  youtube-api_ee6a7e_airflow:
+  youtube-api_c817f8_airflow:
+  # youtube-api_ee6a7e_airflow:
     external: true
     driver: bridge

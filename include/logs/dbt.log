@@ -1,0 +1,29 @@
+[0m17:09:19.330568 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f9e37859c30>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f9e37b9d780>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f9e37b9d6f0>]}
+
+
+============================== 17:09:19.344555 | b78b8d99-d6a4-49ab-b228-79f3f718c5d4 ==============================
+[0m17:09:19.344555 [info ] [MainThread]: Running with dbt=1.8.6
+[0m17:09:19.346341 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'version_check': 'True', 'debug': 'False', 'log_path': 'logs', 'fail_fast': 'False', 'profiles_dir': '/home/alivebook/.dbt', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'None', 'log_format': 'default', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'introspect': 'True', 'target_path': 'None', 'invocation_command': 'dbt init transform_dbt', 'send_anonymous_usage_stats': 'True'}
+[0m17:09:19.674726 [debug] [MainThread]: Starter project path: /mnt/c/Users/PC/OneDrive - ABC/Learning/DE_Project/YoutubeAPI/yt_env/lib/python3.10/site-packages/dbt/include/starter_project
+[0m17:09:20.507926 [info ] [MainThread]: 
+Your new dbt project "transform_dbt" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m17:09:20.511576 [info ] [MainThread]: Setting up your profile.
+[0m17:10:53.970086 [info ] [MainThread]: Profile transform_dbt written to /home/alivebook/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
+[0m17:10:53.977065 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 94.73249, "process_user_time": 2.008687, "process_kernel_time": 1.101209, "process_mem_max_rss": "89928", "process_in_blocks": "14528", "process_out_blocks": "16"}
+[0m17:10:53.979867 [debug] [MainThread]: Command `dbt init` succeeded at 17:10:53.979618 after 94.74 seconds
+[0m17:10:53.982497 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f9e37859c30>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f9e35d48cd0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f9e37b9efe0>]}
+[0m17:10:53.985750 [debug] [MainThread]: Flushing usage events
