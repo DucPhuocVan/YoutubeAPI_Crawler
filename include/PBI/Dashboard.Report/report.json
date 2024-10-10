@@ -1,5 +1,5 @@
 {
-  "config": "{\"version\":\"5.55\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU06\",\"version\":\"5.56\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true,\"linguisticSchemaSyncVersion\":2,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true,\"useStylableVisualContainerHeader\":true,\"queryLimitOption\":6,\"exportDataMode\":1,\"useDefaultAggregateDisplayName\":true,\"useEnhancedTooltips\":true},\"objects\":{\"section\":[{\"properties\":{\"verticalAlignment\":{\"expr\":{\"Literal\":{\"Value\":\"'Top'\"}}}}}],\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}]}}",
+  "config": "{\"version\":\"5.55\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU06\",\"version\":\"5.56\",\"type\":2}},\"activeSectionIndex\":1,\"defaultDrillFilterOtherVisuals\":true,\"linguisticSchemaSyncVersion\":2,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true,\"useStylableVisualContainerHeader\":true,\"queryLimitOption\":6,\"exportDataMode\":1,\"useDefaultAggregateDisplayName\":true,\"useEnhancedTooltips\":true},\"objects\":{\"section\":[{\"properties\":{\"verticalAlignment\":{\"expr\":{\"Literal\":{\"Value\":\"'Top'\"}}}}}],\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}]}}",
   "layoutOptimization": 0,
   "resourcePackages": [
     {
@@ -18,6 +18,36 @@
     }
   ],
   "sections": [
+    {
+      "config": "{}",
+      "displayName": "Page 2",
+      "displayOption": 1,
+      "filters": "[]",
+      "height": 720.00,
+      "name": "3a008158612124dff750",
+      "ordinal": 1,
+      "visualContainers": [
+        {
+          "config": "{\"name\":\"5a48daa6ffae511d895e\",\"layouts\":[{\"id\":0,\"position\":{\"x\":0,\"y\":202,\"width\":289,\"height\":150,\"z\":1,\"tabOrder\":1}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Sum(dw fact_channel_overview.view_count)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d\",\"Entity\":\"dw fact_channel_overview\",\"Type\":0}],\"Select\":[{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"view_count\"}},\"Function\":0},\"Name\":\"Sum(dw fact_channel_overview.view_count)\",\"NativeReferenceName\":\"Sum of view_count\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"view_count\"}},\"Function\":0}}}]},\"drillFilterOtherVisuals\":true,\"hasDefaultSort\":true}}",
+          "filters": "[]",
+          "height": 150.00,
+          "width": 289.00,
+          "x": 0.00,
+          "y": 202.00,
+          "z": 1.00
+        },
+        {
+          "config": "{\"name\":\"c0d227c27c1260782fbe\",\"layouts\":[{\"id\":0,\"position\":{\"x\":0,\"y\":0,\"z\":0,\"width\":288.58848817769285,\"height\":123.50609027943635,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"slicer\",\"projections\":{\"Values\":[{\"queryRef\":\"dw dim_date.d_date\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d\",\"Entity\":\"dw dim_date\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"d_date\"},\"Name\":\"dw dim_date.d_date\",\"NativeReferenceName\":\"d_date\"}],\"OrderBy\":[{\"Direction\":1,\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"d_date\"}}}]},\"drillFilterOtherVisuals\":true,\"hasDefaultSort\":true,\"objects\":{\"data\":[{\"properties\":{\"mode\":{\"expr\":{\"Literal\":{\"Value\":\"'Between'\"}}}}}]}}}",
+          "filters": "[]",
+          "height": 123.51,
+          "width": 288.59,
+          "x": 0.00,
+          "y": 0.00,
+          "z": 0.00
+        }
+      ],
+      "width": 1280.00
+    },
     {
       "config": "{\"relationships\":[{\"source\":\"35a59c443493dfd34749\",\"target\":\"a7a18d05a2a7830eaef1\",\"type\":3},{\"source\":\"35a59c443493dfd34749\",\"target\":\"a73d926712675ce2aa40\",\"type\":3},{\"source\":\"35a59c443493dfd34749\",\"target\":\"4c6a1e0f29dd4fec2072\",\"type\":3},{\"source\":\"35a59c443493dfd34749\",\"target\":\"ac2b35a519f7e89d3f3f\",\"type\":3},{\"source\":\"35a59c443493dfd34749\",\"target\":\"2b6ca87042e0b865f400\",\"type\":3}]}",
       "displayName": "Page 1",
