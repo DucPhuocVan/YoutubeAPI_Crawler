@@ -4,6 +4,7 @@ import pandas as pd
 from io import BytesIO
 from .checkpoint import CheckPoint
 from .load_postgres import Postgres
+from .load_bigquery import BigQuery
 from datetime import datetime
 import io
 from dotenv import load_dotenv
@@ -16,6 +17,7 @@ class S3:
         self.s3_hook = S3Hook(aws_conn_id=aws_conn_id)
         self.checkpoint = CheckPoint()
         self.postgres = Postgres()
+        self.bigquery = BigQuery()
 
     def df_to_parquet(self, df):
         parquet_buffer = io.BytesIO()
@@ -29,7 +31,7 @@ class S3:
         month = now.strftime('%m')
         day = now.strftime('%d')
 
-        s3_path = f'{file_name}/{year}/{month}/{day}/{file_name}{year}{month}{day}.parquet'
+        s3_path = f'{file_name}/year={year}/month={month}/{file_name}{year}{month}{day}.parquet'
         s3_bucket = os.environ.get("s3_bucket")
         parquet_buffer = self.df_to_parquet(df)
 
@@ -57,10 +59,13 @@ class S3:
         return files_to_ingest
 
     def extract_export_date(self, file_key):
-        match = re.search(r'/(\d{4})/(\d{2})/(\d{2})/.*?(\d{8})\.parquet$', file_key)
+        print(file_key)
+        match = re.search(r'/year=(\d{4})/month=(\d{2})/.*?(\d{8})\.parquet$', file_key)
+        print(match)
         
         if match:
-            return match.group(4)
+            print(match.group(3))
+            return match.group(3)
         return None
     
     def read_parquet_from_s3(self, bucket_name, file_key, export_date):
@@ -73,7 +78,8 @@ class S3:
 
         return parquet_df
     
-    def load_file_into_posgres(self, folder_name, unique_key: list, type_load):
+    def load_to_bigquery(self, folder_name: list, unique_key: list, type_load):
+    # def load_file_into_posgres(self, folder_name, unique_key: list, type_load):
         self.checkpoint.create_checkpoint_table()
         checkpoint_date = self.checkpoint.get_last_checkpoint(folder_name)
         bucket_name = os.environ.get("s3_bucket")
@@ -87,14 +93,23 @@ class S3:
             export_date = self.extract_export_date(file_key)
             df = self.read_parquet_from_s3(bucket_name, file_key, export_date)
 
-            if type_load == 'scd_type2':
-                self.postgres.load_to_postgres_scd_type2({folder_name: df}, unique_key)
-            elif type_load == 'overwrite_daily':
-                self.postgres.load_to_postgres_overwrite_daily({folder_name: df}, unique_key)
-            elif type_load == 'overwrite':
-                self.postgres.load_to_postgres_overwrite({folder_name: df}, unique_key)
-            elif type_load == 'append':
-                self.postgres.load_to_postgres_append({folder_name: df}, unique_key)
+            ############## Posgres
+            # if type_load == 'scd_type2':
+            #     self.postgres.load_to_postgres_scd_type2({folder_name: df}, unique_key)
+            # elif type_load == 'snapshot':
+            #     self.postgres.load_to_postgres_snapshot({folder_name: df}, unique_key)
+            # elif type_load == 'overwrite':
+            #     self.postgres.load_to_postgres_overwrite({folder_name: df}, unique_key)
+            # elif type_load == 'append':
+            #     self.postgres.load_to_postgres_append({folder_name: df}, unique_key)
         
+            ############## Google BigQuery
+            if type_load == 'snapshot':
+                self.bigquery.load_snapshot({folder_name: df}, unique_key)
+            elif type_load == 'overwrite':
+                self.bigquery.load_overwrite({folder_name: df}, unique_key)
+            elif type_load == 'append':
+                self.bigquery.load_append({folder_name: df}, unique_key)
+
         self.checkpoint.update_checkpoint(folder_name, datetime.now())
 

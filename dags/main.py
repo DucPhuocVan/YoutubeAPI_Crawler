@@ -12,6 +12,7 @@ from cosmos.airflow.task_group import DbtTaskGroup
 from cosmos.constants import LoadMode
 from cosmos.config import ProjectConfig, RenderConfig
 from cosmos.constants import TestBehavior
+from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateEmptyDatasetOperator
 
 load_dotenv()
 
@@ -33,7 +34,8 @@ def youtube_api():
         youtube.build_service()
         channel_overview_df = youtube.get_channel_overview(os.environ.get('channel_id'))
         load_extract_s3.upload_to_s3(channel_overview_df, 'channel_overview')
-        load_extract_s3.load_file_into_posgres('channel_overview', ['channel_id'], 'overwrite_daily')
+        # load_extract_s3.load_file_into_posgres('channel_overview', ['channel_id'], 'snapshot')
+        load_extract_s3.load_to_bigquery('channel_overview', ['channel_id'], 'snapshot')
 
         return channel_overview_df
 
@@ -43,7 +45,9 @@ def youtube_api():
         print(channel_overview_df)
         all_videos_df = youtube.get_all_videos(channel_overview_df.iloc[0]['playlist_id'])
         load_extract_s3.upload_to_s3(all_videos_df, 'all_videos')
-        load_extract_s3.load_file_into_posgres('all_videos', ['video_id'], 'overwrite')
+        # load_extract_s3.load_file_into_posgres('all_videos', ['video_id'], 'overwrite')
+
+        load_extract_s3.load_to_bigquery('all_videos', 'overwrite')
 
         return all_videos_df
 
@@ -53,7 +57,7 @@ def youtube_api():
         video_list = all_videos_df['video_id'].tolist()
         video_details_df = youtube.get_video_details(video_list)
         load_extract_s3.upload_to_s3(video_details_df, 'video_details')
-        load_extract_s3.load_file_into_posgres('video_details', ['video_id'], 'overwrite_daily')
+        load_extract_s3.load_file_into_posgres('video_details', ['video_id'], 'snapshot')
 
     @task
     def video_comments(all_videos_df):
@@ -97,10 +101,17 @@ def youtube_api():
         )
     )
 
+    create_dataset = BigQueryCreateEmptyDatasetOperator(
+        task_id='create_dataset',
+        dataset_id='youtube_staging',
+        gcp_conn_id='google_cloud_default'
+    )
+
     # Task Dependencies
     channel_overview_df = channel_overview()
     playlist_df = playlists()
     all_videos_df = all_videos(channel_overview_df)
     [video_details(all_videos_df), video_comments(all_videos_df), video_playlists(playlist_df)] >> transform_dw
+    create_dataset
 
 youtube_api()

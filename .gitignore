@@ -18,3 +18,4 @@ include/data
 .astro
 .ipynb_checkpoints
 test.py
+include/key

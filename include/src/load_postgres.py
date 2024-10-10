@@ -36,7 +36,7 @@ class Postgres:
         self.connection.commit()
         self.close()
 
-    def create_table_overwrite_daily(self, table_name: str, columns: dict, unique_key: list):
+    def create_table_snapshot(self, table_name: str, columns: dict, unique_key: list):
         self.connect()
         column_definitions = ', '.join([f"{col} TEXT" for col in columns])
         key_definitions = ', '.join(unique_key) + ', export_date'
@@ -132,7 +132,7 @@ class Postgres:
         self.close()
 
     # insert overwrite daily
-    def insert_overwrite_daily(self, table_name: str, df, unique_key: list):
+    def insert_snapshot(self, table_name: str, df, unique_key: list):
         self.connect()
 
         df['row_hash'] = df.apply(lambda x: self.row_hash(x), axis=1)
@@ -245,10 +245,10 @@ class Postgres:
             self.create_table_overwrite(table_name, df.columns.to_list(), unique_key)
             self.insert_overwrite(table_name, df, unique_key)
 
-    def load_to_postgres_overwrite_daily(self, tables: dict, unique_key: list):
+    def load_to_postgres_snapshot(self, tables: dict, unique_key: list):
         for table_name, df in tables.items():
-            self.create_table_overwrite_daily(table_name, df.columns.to_list(), unique_key)
-            self.insert_overwrite_daily(table_name, df, unique_key)
+            self.create_table_snapshot(table_name, df.columns.to_list(), unique_key)
+            self.insert_snapshot(table_name, df, unique_key)
 
     def load_to_postgres_append(self, tables: dict, unique_key: list):
         for table_name, df in tables.items():
