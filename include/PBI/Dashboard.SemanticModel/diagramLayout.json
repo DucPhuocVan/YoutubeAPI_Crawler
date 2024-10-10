@@ -1,0 +1,99 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 407.76728269575176,
+            "y": 14
+          },
+          "nodeIndex": "dw dim_channel",
+          "nodeLineageTag": "fa2d80a2-0003-4113-b94d-dc348fd97b2e",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 699.89208299961842,
+            "y": 707.54298813464573
+          },
+          "nodeIndex": "dw dim_date",
+          "nodeLineageTag": "61f88b51-66d0-46a7-a3e7-56068b7fcf52",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 694.50927825347651,
+            "y": 0
+          },
+          "nodeIndex": "dw dim_video",
+          "nodeLineageTag": "737f304d-b1a0-487d-b476-a8242f22b851",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 398.70488254381843,
+            "y": 366.36255612711989
+          },
+          "nodeIndex": "dw fact_channel_overview",
+          "nodeLineageTag": "78b5e104-d47d-40b1-8306-e386609743cb",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 698.08768728996006,
+            "y": 336.34063430462987
+          },
+          "nodeIndex": "dw fact_video_detail",
+          "nodeLineageTag": "7bba28c7-dd31-40e5-ab54-c1c39b5e394b",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 585.18720045579994,
+            "y": 341.77149406732286
+          },
+          "nodeIndex": "Measure",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 63.287087723233995,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}
