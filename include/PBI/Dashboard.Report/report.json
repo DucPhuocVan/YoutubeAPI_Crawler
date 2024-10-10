@@ -28,13 +28,31 @@
       "ordinal": 1,
       "visualContainers": [
         {
-          "config": "{\"name\":\"5a48daa6ffae511d895e\",\"layouts\":[{\"id\":0,\"position\":{\"x\":0,\"y\":202,\"width\":289,\"height\":150,\"z\":1,\"tabOrder\":1}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Sum(dw fact_channel_overview.view_count)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d\",\"Entity\":\"dw fact_channel_overview\",\"Type\":0}],\"Select\":[{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"view_count\"}},\"Function\":0},\"Name\":\"Sum(dw fact_channel_overview.view_count)\",\"NativeReferenceName\":\"Sum of view_count\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"view_count\"}},\"Function\":0}}}]},\"drillFilterOtherVisuals\":true,\"hasDefaultSort\":true}}",
+          "config": "{\"name\":\"5a48daa6ffae511d895e\",\"layouts\":[{\"id\":0,\"position\":{\"x\":0,\"y\":202,\"width\":289,\"height\":150,\"z\":1000,\"tabOrder\":1000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Sum(dw fact_channel_overview.view_count)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d\",\"Entity\":\"dw fact_channel_overview\",\"Type\":0}],\"Select\":[{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"view_count\"}},\"Function\":0},\"Name\":\"Sum(dw fact_channel_overview.view_count)\",\"NativeReferenceName\":\"Sum of view_count\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"view_count\"}},\"Function\":0}}}]},\"drillFilterOtherVisuals\":true,\"hasDefaultSort\":true}}",
           "filters": "[]",
           "height": 150.00,
           "width": 289.00,
           "x": 0.00,
           "y": 202.00,
-          "z": 1.00
+          "z": 1000.00
+        },
+        {
+          "config": "{\"name\":\"8feaebb30d7d812ea719\",\"layouts\":[{\"id\":0,\"position\":{\"x\":438.9968951516599,\"y\":139.40291378074994,\"z\":1001,\"width\":249.45784571292094,\"height\":162.63673274420827,\"tabOrder\":1001}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Sum(dw fact_video_detail.video_like_count)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d\",\"Entity\":\"dw fact_video_detail\",\"Type\":0}],\"Select\":[{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"video_like_count\"}},\"Function\":0},\"Name\":\"Sum(dw fact_video_detail.video_like_count)\",\"NativeReferenceName\":\"Sum of video_like_count\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"video_like_count\"}},\"Function\":0}}}]},\"drillFilterOtherVisuals\":true,\"hasDefaultSort\":true}}",
+          "filters": "[]",
+          "height": 162.64,
+          "width": 249.46,
+          "x": 439.00,
+          "y": 139.40,
+          "z": 1001.00
+        },
+        {
+          "config": "{\"name\":\"95fb7bb7b57a92f97f85\",\"layouts\":[{\"id\":0,\"position\":{\"x\":713.5,\"y\":139,\"width\":249,\"height\":163,\"z\":1002,\"tabOrder\":1002}}],\"singleVisual\":{\"visualType\":\"slicer\",\"projections\":{\"Values\":[{\"queryRef\":\"dw dim_channel.channel_name\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d\",\"Entity\":\"dw dim_channel\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"channel_name\"},\"Name\":\"dw dim_channel.channel_name\",\"NativeReferenceName\":\"channel_name\"}]},\"drillFilterOtherVisuals\":true,\"objects\":{\"data\":[{\"properties\":{\"mode\":{\"expr\":{\"Literal\":{\"Value\":\"'Basic'\"}}}}}]}}}",
+          "filters": "[]",
+          "height": 163.00,
+          "width": 249.00,
+          "x": 713.50,
+          "y": 139.00,
+          "z": 1002.00
         },
         {
           "config": "{\"name\":\"c0d227c27c1260782fbe\",\"layouts\":[{\"id\":0,\"position\":{\"x\":0,\"y\":0,\"z\":0,\"width\":288.58848817769285,\"height\":123.50609027943635,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"slicer\",\"projections\":{\"Values\":[{\"queryRef\":\"dw dim_date.d_date\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d\",\"Entity\":\"dw dim_date\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"d_date\"},\"Name\":\"dw dim_date.d_date\",\"NativeReferenceName\":\"d_date\"}],\"OrderBy\":[{\"Direction\":1,\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"d_date\"}}}]},\"drillFilterOtherVisuals\":true,\"hasDefaultSort\":true,\"objects\":{\"data\":[{\"properties\":{\"mode\":{\"expr\":{\"Literal\":{\"Value\":\"'Between'\"}}}}}]}}}",
