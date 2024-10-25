@@ -48,6 +48,8 @@ class Youtube:
             }
             channel_overview.append(row)
 
+        print(channel_overview)
+
         df = pd.DataFrame(channel_overview)
 
         return df

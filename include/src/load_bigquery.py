@@ -63,7 +63,8 @@ class BigQuery:
 
         df['row_hash'] = df.apply(lambda x: self.row_hash(x), axis=1)
         table = f"""{os.environ.get("schema_staging")}.{table_name}"""
-        to_gbq(df, destination_table=table, project_id={os.environ.get("project_id")}, if_exists='append')
+        project = f"""{os.environ.get("project_id")}"""
+        to_gbq(df, destination_table=table, project_id=project, if_exists='append')
 
         self.close()
 
@@ -103,9 +104,9 @@ class BigQuery:
         df['row_hash'] = df.apply(lambda x: self.row_hash(x), axis=1)
         df['export_date'] = datetime.utcnow().strftime('%Y-%m-%d')
         schema = os.environ.get("schema_staging")
-
+        project = os.environ.get("project_id")
         temp_table = f"""{schema}.{table_name}_temp"""
-        df.to_gbq(destination_table=temp_table, project_id={os.environ.get("project_id")}, if_exists='replace')
+        df.to_gbq(destination_table=temp_table, project_id=project, if_exists='replace')
         
         unique_key_conditions = ' AND '.join([f"target.{key} = source.{key}" for key in unique_key])
         column_update = ', '.join([f"target.{col} = source.{col}" for col in df.columns if col not in unique_key])

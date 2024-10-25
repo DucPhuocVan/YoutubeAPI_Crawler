@@ -78,8 +78,7 @@ class S3:
 
         return parquet_df
     
-    def load_to_bigquery(self, folder_name: list, unique_key: list, type_load):
-    # def load_file_into_posgres(self, folder_name, unique_key: list, type_load):
+    def load_file_into_posgres(self, folder_name, unique_key: list, type_load):
         self.checkpoint.create_checkpoint_table()
         checkpoint_date = self.checkpoint.get_last_checkpoint(folder_name)
         bucket_name = os.environ.get("s3_bucket")
@@ -93,15 +92,31 @@ class S3:
             export_date = self.extract_export_date(file_key)
             df = self.read_parquet_from_s3(bucket_name, file_key, export_date)
 
-            ############## Posgres
-            # if type_load == 'scd_type2':
-            #     self.postgres.load_to_postgres_scd_type2({folder_name: df}, unique_key)
-            # elif type_load == 'snapshot':
-            #     self.postgres.load_to_postgres_snapshot({folder_name: df}, unique_key)
-            # elif type_load == 'overwrite':
-            #     self.postgres.load_to_postgres_overwrite({folder_name: df}, unique_key)
-            # elif type_load == 'append':
-            #     self.postgres.load_to_postgres_append({folder_name: df}, unique_key)
+            ############# Posgres
+            if type_load == 'scd_type2':
+                self.postgres.load_to_postgres_scd_type2({folder_name: df}, unique_key)
+            elif type_load == 'snapshot':
+                self.postgres.load_to_postgres_snapshot({folder_name: df}, unique_key)
+            elif type_load == 'overwrite':
+                self.postgres.load_to_postgres_overwrite({folder_name: df}, unique_key)
+            elif type_load == 'append':
+                self.postgres.load_to_postgres_append({folder_name: df}, unique_key)
+
+        self.checkpoint.update_checkpoint(folder_name, datetime.now())
+
+    def load_to_bigquery(self, folder_name: list, unique_key: list, type_load):
+        self.checkpoint.create_checkpoint_table()
+        checkpoint_date = self.checkpoint.get_last_checkpoint(folder_name)
+        bucket_name = os.environ.get("s3_bucket")
+
+        if checkpoint_date is None:
+            checkpoint_date = datetime(2000, 1, 1)
+        
+        files_to_ingest = self.get_files_from_s3(bucket_name, folder_name, checkpoint_date)
+        
+        for file_key in files_to_ingest:
+            export_date = self.extract_export_date(file_key)
+            df = self.read_parquet_from_s3(bucket_name, file_key, export_date)
         
             ############## Google BigQuery
             if type_load == 'snapshot':
